@@ -34,6 +34,9 @@ Wymagania:
 """
 
 
+from collections import defaultdict
+import re
+
 def index_documents(documents: list[str], queries: list[str]) -> list[list[int]]:
     """
     Przetwarza dokumenty i zapytania, zwracając listy indeksów dokumentów,
@@ -48,9 +51,30 @@ def index_documents(documents: list[str], queries: list[str]) -> list[list[int]]
         list[list[int]]: Lista wyników dla kolejnych zapytań.
     """
     ### TUTAJ PODAJ ROZWIĄZANIE ZADANIA
+    word_counts = []
 
+    for doc in documents:
+        words = re.findall(r'\b\w+\b', doc.lower())
+        counter = defaultdict(int)
+        for word in words:
+            counter[word] += 1
+        word_counts.append(counter)
+
+    results = []
+
+    for query in queries:
+        query = query.lower()
+        matches = []
+
+        for i, doc_counter in enumerate(word_counts):
+            if query in doc_counter:
+                matches.append((doc_counter[query], i))
+
+        matches.sort(key=lambda x: (-x[0], -x[1]))
+        results.append([doc_id for _, doc_id in matches])
+
+    return results
     ### return [[]] - powinno być zmienione i zwrócić prawdziwy wynik (zgodny z oczekiwaniami)
-    return [[]]
 
 
 # Przykładowe wywołanie:
